@@ -1,0 +1,3 @@
+[submodule "Glitter"]
+	path = Glitter
+	url = https://github.com/Polytonic/Glitter.git

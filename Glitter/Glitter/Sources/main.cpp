@@ -33,6 +33,9 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+// lighting
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f); // Light position
+
 int main()
 {
 	// glfw: initialize and configure
@@ -72,7 +75,8 @@ int main()
 	}
 
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-	stbi_set_flip_vertically_on_load(true);
+	
+
 
 	// configure global opengl state
 	// -----------------------------
@@ -80,11 +84,11 @@ int main()
 
 	// build and compile shaders
 	// -------------------------
-	Shader ourShader("1.model_loading.vs", "1.model_loading.fs");
+	Shader ourShader("/opengl/1.model_loading.vs", "/opengl/1.model_loading.fs");
 
 	// load models
 	// -----------
-	Model ourModel("C:/coding/Glitter for Opengl/logo.obj");
+	Model ourModel("/opengl/logo.obj");
 
 
 	// draw in wireframe
@@ -106,17 +110,27 @@ int main()
 
 		// render
 		// ------
-		glClearColor(1.f, 1.f, 1.f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// don't forget to enable shader before setting uniforms
 		ourShader.use();
 
+		// Activate shader
+		ourShader.use();
+		
+		
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
 		ourShader.setMat4("projection", projection);
+
+		// camera/view transformation
+		glm::mat4 view = camera.GetViewMatrix();
 		ourShader.setMat4("view", view);
+
+		// set light uniforms
+		ourShader.setVec3("light.position", lightPos);
+		ourShader.setVec3("viewPos", camera.Position);
 
 		// render the loaded model
 		glm::mat4 model = glm::mat4(1.0f);
@@ -135,6 +149,7 @@ int main()
 	// glfw: terminate, clearing all previously allocated GLFW resources.
 	// ------------------------------------------------------------------
 	glfwTerminate();
+
 	return 0;
 }
 
